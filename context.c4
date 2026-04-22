@@ -1,0 +1,14 @@
+model {
+  // Job pathway
+  submission -> tre {title "Submit job request"}
+  tre -> execution {title "Submit job"}
+  execution -> tre {title "Return job result"}
+  tre -> egress {title "Show results for approval"}  
+}
+
+views {
+  view index {
+    title '5Safes-TES - Context'
+    include *
+  }
+}

@@ -1,0 +1,22 @@
+model {
+  extend tre {
+    // Components
+    tre_app = service 'TRE Application' 
+    camunda = component 'Camunda' 'Credential Handler'
+    minio = component 'Minio' 'S3 Object Store'
+    keycloak = component 'TRE Keycloak' 'Authenticates requests througout the layer'
+
+    // Relationships
+    camunda -> execution 'Forwards configured job'
+    execution -> minio 'Stores job result'
+    minio -> data_owner 'Notifies'
+    minio -> submission.minio 'Transfers'
+  }
+}
+
+views {
+  view of tre {
+    title 'TRE Service'
+    include *
+  }
+}

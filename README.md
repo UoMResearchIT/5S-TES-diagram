@@ -1,4 +1,35 @@
 # 5S-TES-diagram
 
-A likeC4 diagram of the (5Safes-TES TRE)[https://docs.federated-analytics.ac.uk/five_safes_tes], for displaying on github pages.
+A likeC4 diagram of the (5Safes-TES TRE)[https://docs.federated-analytics.ac.uk/five_safes_tes], 
+for displaying on github pages.
 
+This repo contains scripts and source files for generating a C4 diagram of 
+the stack.
+
+## `create.sh`
+
+The `create.sh` script wraps the LikeC4 Docker container to provide easy use
+of the LikeC4 tooling.
+
+```bash
+./create.sh {command}
+```
+
+### Commands
+
+- `server`: Launch the interactive LikeC4 server for diagram editing and visualisation.
+- `export`: Run the LikeC4 tool for exporting images
+- `build`: Run the LikeC4 tool for building a static website
+
+### Requirements
+
+- Docker must be installed and running.
+
+### Notes
+
+- The script assumes that the script is being run in the `Diagrams` subdirectory
+- The built side can be viewed by moving to the generated `dist` directory and running:
+
+```bash
+python3 -m http.server 8000
+```

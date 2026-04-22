@@ -1,0 +1,4 @@
+model {
+  researcher = external_actor 'Researcher'
+  data_owner = internal_actor 'Data Owner'
+}
