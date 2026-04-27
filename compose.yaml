@@ -1,0 +1,28 @@
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: unless-stopped
+    environment:
+      - TUNNEL_TOKEN=eyJhIjoiZTk3ZjM1OGM3NTc5ZjdkYjJlNDVmNTI2OTE1MzgxMzYiLCJ0IjoiYzI0MzMyY2QtOTQxZS00ZWIwLTlkYTEtNmEwMzFhNjI4MjIxIiwicyI6Ik9XTTRZMk5sWW1NdE5XRXhZUzAwT1RKaUxXRXpOMll0WkRneE5ETXhNMkV3WkRWayJ9
+    command: tunnel --no-autoupdate run
+    networks:
+      - likec4
+
+  likec4:
+    image: likec4/likec4:latest
+    command: start
+    container_name: likec4
+    ports:
+      - 5173:5173
+      - 24678:24678
+    environment:
+      - CHOKIDAR_USEPOLLING=1
+      - CHOKIDAR_INTERVAL=200
+    volumes:
+      - ./:/data
+    networks:
+      - likec4
+
+networks:
+  likec4:
