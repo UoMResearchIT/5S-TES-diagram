@@ -1,57 +1,67 @@
 model {
+  // ---------------------------------------------------------------------------
+  // Actors
+
+  researcher = external_actor {
+    title 'Researcher'
+    description 'Researcher who wishes to perform analyses on protected data'
+
+    -> submission.sub_ui 'Views in browser'
+  }
+  
+  data_owner = internal_actor {
+    title 'Data Owner'
+    description 'Responsible party who can approve / reject data leaving the TRE'
+
+    -> egress.egress_ui 'Views / Approves'
+  }
+
+  tre_admin = internal_actor {
+    title 'TRE Admin'
+    description 'Superuser responsible for management of the TRE layer'
+
+    -> tre 'Administers'
+  }
+
+  // ----------------------------------------------------------------------------
   // Systems
-  submission = system 'Submission Layer' 'User interaction layer, job submission'
-  execution = system 'Execution Layer' 'Stack responsible for job execution'
-  tre = system 'TRE Layer' 'Secure environment with access to restricted data'
-  egress = system 'Egress' 'Allow approval / rejection of results before they leave the TRE'
+  
+  submission = system {
+    title 'Submission Layer'
+    description 'User interaction layer, job submission'
+    technology '[Docker Compose]'
+  }
+
+  execution = system {
+    title 'Execution Layer'
+    description 'Stack responsible for job execution'
+  }
+  
+  tre = system {
+    title 'TRE'
+    description 'Secure environment with access to restricted data'
+    technology '[Docker Compose]'
+  }
+  
+  egress = system {
+    title 'Egress'
+    description 'Allow approval / rejection of results before they leave the TRE'
+    technology '[Docker Compose]'
+  }
+
+  // ----------------------------------------------------------------------------
+  // External Systems
+  
+  protected_data = database {
+    title 'Restricted Data'
+    description 'The protected data being queried, directly readable only during tool execution, inside the protected environment'
+  }
 }
 
 views {
   view index {
     title '5Safes-TES - Context'
+    description 'Top level diagram'
     include *
-  }
-
-  dynamic view logic {
-    title 'Data flow through the 5S-TES'
-
-    // Submit job
-    researcher -> submission.submission_app 'Submits job request'
-
-    // Store inputs and create job
-    parallel {
-      submission.submission_app -> submission.rabbitmq 'Job added to queue'
-      submission.submission_app -> submission.minio 'Inputs stored'
-    }
-
-    // Pickup job
-    submission.rabbitmq <- tre.tre_app 'Polls for jobs'
-    submission.rabbitmq -> tre.tre_app 'Transfers job'
-
-    // Store inputs, fetch credentials, dispatch job
-    parallel {
-      tre.tre_app -> tre.camunda 'Request Credentials'
-      tre.camunda -> tre.tre_app 'Return Credentials'
-      tre.tre_app -> tre.minio 'Inputs stored'
-    }
-
-    // Execute job
-    tre.tre_app -> execution.funnel 'Submit job'
-    parallel {
-      execution.funnel -> tre.minio 'Return results'
-      execution.funnel -> tre.tre_app 'Return status'
-    }
-
-    // Present data for egress review
-    tre.tre_app -> egress.egress_ui 'Post result'
-    egress.egress_ui -> data_owner 'Display results for review'
-    data_owner -> egress.egress_ui 'Approve results'
-
-    // Egress
-    egress.egress_ui -> tre.minio 'Trigger transfer'
-    tre.minio -> submission.minio 'Transfers results'
-    submission.minio -> researcher 'View results'
-
-    include submission, tre, egress, execution
   }
 }
