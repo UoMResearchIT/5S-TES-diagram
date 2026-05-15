@@ -29,8 +29,8 @@ model {
 }
 
 views {
-  view of tre.tre_app {
+  view tre_app of tre.tre_app {
     title 'TRE App'
-    include *, tre, tre.vault, tre.camunda
+    include *
   }
 }
