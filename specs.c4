@@ -38,7 +38,7 @@ specification {
   color component-colour rgba(0, 0, 0, 50%)
   element component {
     style {
-      color component-colour
+      color muted
     }
   }
 
